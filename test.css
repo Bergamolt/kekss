@@ -1,0 +1,35 @@
+:root {
+  --x: 1;
+  --y: 5;
+  --b: 6;
+  --col-z: berry;
+  --radius: 50%;
+}
+
+html {
+ background: var(--col-z);
+}
+
+.add {
+ color: white;
+ background-color: rgb (var(--y) , 4 , var(--b) );
+}
+
+#ad {
+ color: rgb (var(--x) , 4 , 5 );
+}
+
+.a {
+ color: var(--col-z);
+ border: 10px solid black;
+ border-radius: var(--radius);
+}
+
+button {
+ border:  @t { border : 0px;
+ border-radius: 5px;
+ background-color: var(--col-z);
+ color: white;
+ padding: 10px 20px;
+}
+

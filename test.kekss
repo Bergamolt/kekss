@@ -1,0 +1,41 @@
+$x = 1;
+$y = 5;
+$b = 6;
+$col-z = berry;
+
+@f{
+  $radius = 50%;
+  border: 10px solid black;
+  border-radius: $radius;
+}
+
+html {
+  background: $col-z;
+}
+
+@t {
+  border: 0px;
+  border-radius: 5px;
+  background-color: $col-z;
+  color: white;
+  padding: 10px 20px;
+}
+
+
+.add{
+  color: white;
+  background-color: rgb($y, 4, $b);
+}
+
+#ad{
+  color: rgb($x, 4, 5);
+}
+
+.a {
+  color: $col-z;
+  @f;
+}
+
+button {
+  @t;
+}
