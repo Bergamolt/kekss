@@ -25,9 +25,9 @@ export class Tree {
       this.prevLexeme = lexemes[i - 1] ?? ''
       this.nextLexeme = lexemes[i + 1] ?? ''
 
-      if (this.isVariable && lexeme !== SYM.SEMI_COLON) {
-        continue
-      }
+      // if (this.isVariable && lexeme !== SYM.SEMI_COLON) {
+      //   continue
+      // }
 
       if (lexeme === SYM.EQUAL) {
         this.memory[this.prevLexeme] = this.nextLexeme
@@ -35,14 +35,14 @@ export class Tree {
         continue
       }
 
-      if (lexeme === SYM.LEFT_BRACE) {
-        this.isOpenBrace = true
-        this.tree[this.currentSelector.trim()] = {}
+      if (this.isVariable && lexeme === SYM.SEMI_COLON) {
+        this.isVariable = false
         continue
       }
 
-      if (this.isVariable && lexeme === SYM.SEMI_COLON) {
-        this.isVariable = false
+      if (lexeme === SYM.LEFT_BRACE) {
+        this.isOpenBrace = true
+        this.tree[this.currentSelector.trim()] = {}
         continue
       }
 
@@ -60,9 +60,9 @@ export class Tree {
         this.isColon = true
         this.currentProperty = lexeme
 
-        // if (lexeme.startsWith(SYM.AT)) {
-        //   this.currentValue = ' '
-        // }
+        if (lexeme.startsWith(SYM.AT)) {
+          this.currentValue = ' '
+        }
 
         continue
       }
