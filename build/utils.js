@@ -52,7 +52,7 @@ const createVariables = (variables) => {
     let root = ':root {';
     for (const variable in variables) {
         const value = variables[variable];
-        root += `${constants_1.SYM.NEW_LINE}  --${variable.substring(1)}: ${value};`;
+        root += `${constants_1.SYM.NEW_LINE}\t--${variable.substring(1)}: ${value};`;
     }
     return root + `${constants_1.SYM.NEW_LINE}}${constants_1.SYM.NEW_LINE.repeat(2)}`;
 };

@@ -4,9 +4,9 @@ $b = 6;
 $col-z = berry;
 
 @f{
-  $radius = 50%;
-  border: 10px solid black;
-  border-radius: $radius;
+  border: 0px;
+  border-radius: 5px;
+  padding: 10px 20px;
 }
 
 html {
@@ -16,8 +16,7 @@ html {
 @t {
   border: 0px;
   border-radius: 5px;
-  background-color: $col-z;
-  color: white;
+  background-color: red;
   padding: 10px 20px;
 }
 
@@ -31,11 +30,20 @@ html {
   color: rgb($x, 4, 5);
 }
 
-.a {
+.test ul li a {
   color: $col-z;
   @f;
 }
 
 button {
   @t;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: $col-z; 
 }

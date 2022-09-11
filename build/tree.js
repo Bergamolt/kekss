@@ -36,41 +36,67 @@ class Tree {
     isOpenBrace = false;
     isColon = false;
     isSemiColon = false;
+    isVariable = false;
+    prevLexeme = '';
+    nextLexeme = '';
     generation(lexemes) {
         for (let i = 0; i < lexemes.length; i++) {
             const lexeme = lexemes[i];
-            if (lexeme === constants_1.SYM.EQUAL) {
-                this.memory[lexemes[i - 1]] = lexemes[i + 1];
+            this.prevLexeme = lexemes[i - 1] ?? '';
+            this.nextLexeme = lexemes[i + 1] ?? '';
+            if (this.isVariable && lexeme !== constants_1.SYM.SEMI_COLON) {
+                continue;
             }
-            if (!constants_1.KEYWORDS.includes(lexeme) && lexemes[i + 1] === constants_1.SYM.LEFT_BRACE) {
-                this.currentSelector = lexeme;
+            if (lexeme === constants_1.SYM.EQUAL) {
+                this.memory[this.prevLexeme] = this.nextLexeme;
+                this.isVariable = true;
+                continue;
             }
             if (lexeme === constants_1.SYM.LEFT_BRACE) {
                 this.isOpenBrace = true;
-                this.tree[this.currentSelector] = {};
+                this.tree[this.currentSelector.trim()] = {};
+                continue;
+            }
+            if (this.isVariable && lexeme === constants_1.SYM.SEMI_COLON) {
+                this.isVariable = false;
+                continue;
+            }
+            if (!this.isVariable && lexeme !== constants_1.SYM.LEFT_BRACE && !this.isOpenBrace && !lexeme.startsWith(constants_1.SYM.VAR)) {
+                this.currentSelector += lexeme + ' ';
+                continue;
             }
             if (this.isOpenBrace && (lexemes[i + 1] === constants_1.SYM.COLON || lexeme.startsWith(constants_1.SYM.AT))) {
+                this.isColon = true;
                 this.currentProperty = lexeme;
                 if (lexeme.startsWith(constants_1.SYM.AT)) {
-                    this.isColon = true;
                     this.currentValue = ' ';
                 }
+                continue;
+            }
+            if (lexeme === constants_1.SYM.COLON) {
+                this.isColon = true;
+                continue;
             }
             if (this.isOpenBrace && this.isColon && lexeme !== constants_1.SYM.SEMI_COLON) {
-                this.currentValue += ` ${lexeme}`;
-            }
-            if (lexeme === constants_1.SYM.COLON && this.currentProperty) {
-                this.isColon = true;
+                this.currentValue += ' ' + lexeme;
             }
             if (lexeme === constants_1.SYM.SEMI_COLON && this.isColon) {
                 this.isColon = false;
                 this.isSemiColon = false;
             }
             if (this.currentSelector && this.currentProperty && this.currentValue && !this.isColon && !this.isSemiColon) {
-                this.tree[this.currentSelector] = Object.assign(this.tree[this.currentSelector], {
-                    [this.currentProperty]: this.currentValue,
-                });
+                const selector = this.currentSelector.trim();
+                const property = this.currentProperty;
+                const value = this.currentValue.trim();
+                this.tree[selector] = { ...this.tree[selector], [property]: value };
+                this.currentProperty = '';
                 this.currentValue = '';
+            }
+            if (lexeme === constants_1.SYM.RIGHT_BRACE) {
+                this.isOpenBrace = false;
+                this.currentSelector = '';
+                this.currentValue = '';
+                this.currentProperty = '';
             }
         }
     }
@@ -80,7 +106,7 @@ class Tree {
             for (const property in newTree[key]) {
                 if (property.includes(constants_1.SYM.AT)) {
                     delete newTree[key][property];
-                    newTree[key] = Object.assign(newTree[key], (0, utils_1.parseVariables)(this.tree[property]));
+                    newTree[key] = { ...newTree[key], ...(0, utils_1.parseVariables)(this.tree[property]) };
                     continue;
                 }
                 newTree[key] = (0, utils_1.parseVariables)(newTree[key]);
@@ -97,7 +123,7 @@ class Tree {
             output += `${key} {${constants_1.SYM.NEW_LINE}`;
             for (const property in this.tree[key]) {
                 const value = this.tree[key][property];
-                output += `${constants_1.SYM.SPACE}${property}:${value};${constants_1.SYM.NEW_LINE}`;
+                output += `\t${property}: ${value};${constants_1.SYM.NEW_LINE}`;
             }
             output += `}${constants_1.SYM.NEW_LINE.repeat(2)}`;
         }

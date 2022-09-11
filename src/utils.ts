@@ -32,7 +32,7 @@ export const createVariables = (variables: any): string => {
 
   for (const variable in variables) {
     const value = variables[variable]
-    root += `${SYM.NEW_LINE}  --${variable.substring(1)}: ${value};`
+    root += `${SYM.NEW_LINE}\t--${variable.substring(1)}: ${value};`
   }
 
   return root + `${SYM.NEW_LINE}}${SYM.NEW_LINE.repeat(2)}`
