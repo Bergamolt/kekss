@@ -1,5 +1,5 @@
 import {createVariables, parseVariables} from './utils'
-import {KEYWORDS, SYM} from './constants'
+import {SYM} from './constants'
 import * as fs from 'fs'
 
 export class Tree {
@@ -11,92 +11,85 @@ export class Tree {
   private currentValue: string = ''
 
   private isOpenBrace: boolean = false
-  private isColon: boolean = false
-  private isSemiColon: boolean = false
-  private isVariable = false
+  private isAttribute: boolean = false
+  private isValue: boolean = false
 
   private prevLexeme: string = ''
   private nextLexeme: string = ''
 
+  private idString: string = ''
+  private lastIdString: string = ''
+  private lastProperty: string = ''
+
   public generation(lexemes: string[]) {
     for (let i = 0; i < lexemes.length; i++) {
       const lexeme = lexemes[i]
-
       this.prevLexeme = lexemes[i - 1] ?? ''
       this.nextLexeme = lexemes[i + 1] ?? ''
 
-      // if (this.isVariable && lexeme !== SYM.SEMI_COLON) {
-      //   continue
-      // }
-
-      if (lexeme === SYM.EQUAL) {
-        this.memory[this.prevLexeme] = this.nextLexeme
-        this.isVariable = true
-        continue
-      }
-
-      if (this.isVariable && lexeme === SYM.SEMI_COLON) {
-        this.isVariable = false
-        continue
-      }
-
       if (lexeme === SYM.LEFT_BRACE) {
         this.isOpenBrace = true
-        this.tree[this.currentSelector.trim()] = {}
+        this.isAttribute = true
         continue
-      }
-
-      if (!this.isVariable && lexeme !== SYM.LEFT_BRACE && !this.isOpenBrace && !lexeme.startsWith(SYM.VAR)) {
-        this.currentSelector += lexeme + ' '
-        continue
-      }
-
-      // if (lexeme.startsWith(SYM.AT) && this.isOpenBrace) { 
-      //   this.currentProperty = lexeme
-      //   this.currentValue = ' '
-      // }
-
-      if (this.isOpenBrace && (this.nextLexeme === SYM.COLON || lexeme.startsWith(SYM.AT))) {
-        this.isColon = true
-        this.currentProperty = lexeme
-
-        if (lexeme.startsWith(SYM.AT)) {
-          this.currentValue = ' '
-        }
-
-        continue
-      }
-
-      if (lexeme === SYM.COLON) {
-        this.isColon = true
-        continue
-      }
-
-      if (this.isOpenBrace && this.isColon && lexeme !== SYM.SEMI_COLON) {
-        this.currentValue += ' ' + lexeme
-      }
-
-      if (lexeme === SYM.SEMI_COLON && this.isColon) {
-        this.isColon = false
-        this.isSemiColon = false
-      }
-
-      if (this.currentSelector && this.currentProperty && this.currentValue && !this.isColon && !this.isSemiColon) {
-        const selector = this.currentSelector.trim()
-        const property = this.currentProperty
-        const value = this.currentValue.trim()
-
-        this.tree[selector] = {...this.tree[selector], [property]: value}
-
-        this.currentProperty = ''
-        this.currentValue = ''
       }
 
       if (lexeme === SYM.RIGHT_BRACE) {
         this.isOpenBrace = false
-        this.currentSelector = ''
-        this.currentValue = ''
+        this.isAttribute = false
+        this.lastIdString = ''
+        continue
+      }
+
+      if (lexeme === SYM.COLON) {
+        this.isAttribute = false
+        this.isValue = true
+        continue
+      }
+
+      if (lexeme === SYM.SEMI_COLON) {
+        this.isValue = false
+        this.isAttribute = true
+        continue
+      }
+
+      if (lexeme == SYM.EQUAL) {
+        this.memory[this.prevLexeme] = this.nextLexeme
+        continue
+      }
+
+      if (this.nextLexeme === SYM.EQUAL || this.prevLexeme === SYM.EQUAL) {
+        continue
+      }
+
+      if (!this.isOpenBrace) {
+        this.idString += lexeme + ' '
+      }
+
+      if (this.isOpenBrace && !this.lastIdString) {
+        this.lastIdString = this.idString.trim()
+        this.idString = ''
+      }
+
+      if (this.isAttribute) {
+        this.currentProperty = lexeme
+      }
+
+      if (this.isValue) {
+        this.currentValue = lexeme
+      }
+
+      if (this.currentProperty) {
+        this.tree[this.lastIdString] = this.tree[this.lastIdString]
+          ? {...this.tree[this.lastIdString], [this.currentProperty]: ''}
+          : {[this.currentProperty]: ''}
+
+        this.lastProperty = this.currentProperty
         this.currentProperty = ''
+      }
+
+      if (this.currentValue) {
+        this.tree[this.lastIdString][this.lastProperty] += this.currentValue + ' '
+        this.currentValue = ''
       }
     }
   }

@@ -2,7 +2,7 @@ import {Tree} from './tree'
 import {Lexer} from './lexer'
 import {readSource} from './utils'
 
-;(function () {
+function main() {
   const source: string = readSource('./test.kekss')
   const lexer = new Lexer(source)
   const tree = new Tree()
@@ -10,4 +10,6 @@ import {readSource} from './utils'
   tree.generation(lexer.getLexemes())
   tree.parse()
   tree.output('test')
-})()
+}
+
+main()
