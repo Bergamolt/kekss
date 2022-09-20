@@ -49,6 +49,6 @@
 
   .add {
     color: white;
-    background-color: rgb (var(--y), 4, var(--b));
+    background-color: rgb(var(--y), 4, var(--b));
   }
 ```

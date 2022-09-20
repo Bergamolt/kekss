@@ -3,14 +3,10 @@ $y = 5;
 $b = 6;
 $col-z = berry;
 
-@f{
+@f {
   border: 0px;
   border-radius: 5px;
   padding: 10px 20px;
-}
-
-html {
-  background: $col-z;
 }
 
 @t {
@@ -21,22 +17,26 @@ html {
 }
 
 
-.add{
+html {
+  background: $col-z;
+}
+
+button {
+  @t;
+}
+
+.add {
   color: white;
   background-color: rgb($y, 4, $b);
 }
 
-#ad{
+#ad {
   color: rgb($x, 4, 5);
 }
 
 .test ul li a {
   color: $col-z;
   @f;
-}
-
-button {
-  @t;
 }
 
 .wrapper {
@@ -46,4 +46,21 @@ button {
   align-items: center;
   height: 100vh;
   background: $col-z; 
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+
+  li {
+    color: red;
+
+    a {
+      color: blue;
+      
+      text-decoration: none;
+    }
+  }
 }

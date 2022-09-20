@@ -2,6 +2,9 @@ import { createVariables, parseVariables } from './utils'
 import { SYM } from './constants'
 import * as fs from 'fs'
 
+const checkNeedAddSpace = (lexeme: string): boolean =>
+  lexeme === SYM.COMMA || lexeme === SYM.RIGHT_ROUND || lexeme === SYM.LEFT_ROUND || lexeme === SYM.SEMI_COLON
+
 export class Tree {
   private memory: { [key: string]: string | number } = {}
   private tree: any = {}
@@ -80,10 +83,9 @@ export class Tree {
       }
 
       if (this.currentValue && selector) {
-        this.tree[selector][this.lastProperty] +=
-          this.nextLexeme === SYM.COMMA || this.nextLexeme === SYM.RIGHT_ROUND || this.nextLexeme === SYM.SEMI_COLON
-            ? this.currentValue
-            : this.currentValue + ' '
+        const property = checkNeedAddSpace(this.nextLexeme) ? this.currentValue : this.currentValue + ' '
+
+        this.tree[selector][this.lastProperty] += property
         this.currentValue = ''
       }
     }

@@ -9,26 +9,26 @@ html {
 	background: var(--col-z);
 }
 
+button {
+	border: 0px;
+	border-radius: 5px;
+	background-color: red;
+	padding: 10px 20px;
+}
+
 .add {
 	color: white;
-	background-color: rgb (var(--y) , 4 , var(--b) );
+	background-color: rgb (var(--y), 4, var(--b));
 }
 
 #ad {
-	color: rgb (var(--x) , 4 , 5 );
+	color: rgb (var(--x), 4, 5);
 }
 
 .test ul li a {
 	color: var(--col-z);
 	border: 0px;
 	border-radius: 5px;
-	padding: 10px 20px;
-}
-
-button {
-	border: 0px;
-	border-radius: 5px;
-	background-color: red;
 	padding: 10px 20px;
 }
 
@@ -39,5 +39,20 @@ button {
 	align-items: center;
 	height: 100vh;
 	background: var(--col-z);
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+ul li {
+	color: red;
+}
+
+ul li a {
+	color: blue;
+	text-decoration: none;
 }
 
