@@ -11,12 +11,10 @@ export type SYM_NAME_TYPE =
   | 'COMMA'
   | 'EQUAL'
   | 'UNION'
-  // | 'DOT'
+  | 'DOT'
   | 'AT'
   | 'VAR'
 
 export type SYM_TYPE = {
   [key in SYM_NAME_TYPE]: string
 }
-
-

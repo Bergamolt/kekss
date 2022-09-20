@@ -1,4 +1,4 @@
-import {SYM_TYPE} from './types'
+import { SYM_TYPE } from './types'
 
 export const SYM: SYM_TYPE = {
   LEFT_BRACE: '{',
@@ -13,7 +13,7 @@ export const SYM: SYM_TYPE = {
   COMMA: ',',
   EQUAL: '=',
   UNION: '-',
-  // DOT: '.',
+  DOT: '.',
   AT: '@',
   VAR: '$',
 }

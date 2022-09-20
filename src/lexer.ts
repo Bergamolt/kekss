@@ -1,5 +1,5 @@
-import {isExcludeSym} from './utils'
-import {KEYWORDS, SYM} from './constants'
+import { isExcludeSym } from './utils'
+import { KEYWORDS, SYM } from './constants'
 
 export class Lexer {
   private lexemes: string[] = []

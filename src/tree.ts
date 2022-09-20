@@ -1,16 +1,15 @@
-import {createVariables, parseVariables} from './utils'
-import {SYM} from './constants'
+import { createVariables, parseVariables } from './utils'
+import { SYM } from './constants'
 import * as fs from 'fs'
 
 export class Tree {
-  private memory: {[key: string]: string | number} = {}
+  private memory: { [key: string]: string | number } = {}
   private tree: any = {}
+  private selectors: string[] = []
 
-  private currentSelector: string = ''
   private currentProperty: string = ''
   private currentValue: string = ''
 
-  private isOpenBrace: boolean = false
   private isAttribute: boolean = false
   private isValue: boolean = false
 
@@ -18,25 +17,24 @@ export class Tree {
   private nextLexeme: string = ''
 
   private idString: string = ''
-  private lastIdString: string = ''
   private lastProperty: string = ''
 
   public generation(lexemes: string[]) {
     for (let i = 0; i < lexemes.length; i++) {
+      const selector = this.selectors?.join(' ')
       const lexeme = lexemes[i]
       this.prevLexeme = lexemes[i - 1] ?? ''
       this.nextLexeme = lexemes[i + 1] ?? ''
 
       if (lexeme === SYM.LEFT_BRACE) {
-        this.isOpenBrace = true
+        this.selectors.push(this.idString.trim())
         this.isAttribute = true
         continue
       }
 
       if (lexeme === SYM.RIGHT_BRACE) {
-        this.isOpenBrace = false
         this.isAttribute = false
-        this.lastIdString = ''
+        this.selectors.pop()
         continue
       }
 
@@ -49,6 +47,7 @@ export class Tree {
       if (lexeme === SYM.SEMI_COLON) {
         this.isValue = false
         this.isAttribute = true
+        this.idString = ''
         continue
       }
 
@@ -61,16 +60,9 @@ export class Tree {
         continue
       }
 
-      if (!this.isOpenBrace) {
-        this.idString += lexeme + ' '
-      }
+      this.idString += lexeme === SYM.DOT ? lexeme : lexeme + SYM.SPACE
 
-      if (this.isOpenBrace && !this.lastIdString) {
-        this.lastIdString = this.idString.trim()
-        this.idString = ''
-      }
-
-      if (this.isAttribute) {
+      if (this.isAttribute && this.nextLexeme !== SYM.LEFT_BRACE) {
         this.currentProperty = lexeme
       }
 
@@ -78,17 +70,20 @@ export class Tree {
         this.currentValue = lexeme
       }
 
-      if (this.currentProperty) {
-        this.tree[this.lastIdString] = this.tree[this.lastIdString]
-          ? {...this.tree[this.lastIdString], [this.currentProperty]: ''}
-          : {[this.currentProperty]: ''}
+      if (this.currentProperty && selector) {
+        this.tree[selector] = this.tree[selector]
+          ? { ...this.tree[selector], [this.currentProperty]: '' }
+          : { [this.currentProperty]: '' }
 
         this.lastProperty = this.currentProperty
         this.currentProperty = ''
       }
 
-      if (this.currentValue) {
-        this.tree[this.lastIdString][this.lastProperty] += this.currentValue + ' '
+      if (this.currentValue && selector) {
+        this.tree[selector][this.lastProperty] +=
+          this.nextLexeme === SYM.COMMA || this.nextLexeme === SYM.RIGHT_ROUND || this.nextLexeme === SYM.SEMI_COLON
+            ? this.currentValue
+            : this.currentValue + ' '
         this.currentValue = ''
       }
     }
@@ -101,7 +96,7 @@ export class Tree {
       for (const property in newTree[key]) {
         if (property.includes(SYM.AT)) {
           delete newTree[key][property]
-          newTree[key] = {...newTree[key], ...parseVariables(this.tree[property])}
+          newTree[key] = { ...newTree[key], ...parseVariables(this.tree[property]) }
           continue
         }
 

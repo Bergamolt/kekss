@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import {SYM} from './constants'
+import { SYM } from './constants'
 
 export const isExcludeSym = (char: string) => ![SYM.UNION, SYM.AT, SYM.VAR].includes(char)
 
@@ -7,7 +7,7 @@ export const readSource = (path: string) => {
   return fs.readFileSync(path, 'utf8')
 }
 
-export const parseVariables = (obj: {[key: string]: string}): object => {
+export const parseVariables = (obj: { [key: string]: string }): object => {
   const newObj = JSON.parse(JSON.stringify(obj))
 
   for (const key in newObj) {

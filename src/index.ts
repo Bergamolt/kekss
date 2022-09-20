@@ -1,6 +1,6 @@
-import {Tree} from './tree'
-import {Lexer} from './lexer'
-import {readSource} from './utils'
+import { Tree } from './tree'
+import { Lexer } from './lexer'
+import { readSource } from './utils'
 
 function main() {
   const source: string = readSource('./test.kekss')
